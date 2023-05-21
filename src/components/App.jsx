@@ -1,21 +1,25 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { nanoid } from 'nanoid';
+import PhonebookForm from './PhonebookForm/PhonebookForm';
+import FilterForm from './Filter/Filter';
+import Contacts from './Contacts/Contacts';
+import { filter, getFilter } from './Redux/Filter/filterSlice';
+import {
+  addContact,
+  removeContact,
+  getContacts,
+} from './Redux/Contacts/contactsSlice';
 import {
   Container,
   MainTitle,
   SecondTitle,
 } from './Container/Container.styled';
-import PhonebookForm from './PhonebookForm/PhonebookForm';
-import FilterForm from './Filter/Filter';
-import Contacts from './Contacts/Contacts';
-import { addContact, removeContact } from './Redux/Contacts/contacts';
-import { filter } from './Redux/Filter/Filter';
 
 export function App() {
   const dispatch = useDispatch();
 
-  const contacts = useSelector(state => state.contacts.array);
-  const contactsFilter = useSelector(state => state.filter.value);
+  const contacts = useSelector(getContacts);
+  const contactsFilter = useSelector(getFilter);
 
   const addContacts = (name, number) => {
     const checkName = contacts.some(
