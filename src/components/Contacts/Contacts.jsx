@@ -12,7 +12,7 @@ const Contacts = ({ options, removeContact }) => {
       <ContactsWrapper>
         {options.map(({ id, name, number }) => {
           return (
-            <ContactItem key={id}>
+            <ContactItem key={name}>
               <ContactName>
                 {name}: {number}
               </ContactName>

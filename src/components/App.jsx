@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { nanoid } from 'nanoid';
 import {
   Container,
@@ -8,15 +8,16 @@ import {
 import PhonebookForm from './PhonebookForm/PhonebookForm';
 import FilterForm from './Filter/Filter';
 import Contacts from './Contacts/Contacts';
-import useLocalStorage from '../hooks/hooks';
-
-const CONTACTS_LIST = 'phone_contacts';
+import { addContact, removeContact } from './Redux/Contacts/contacts';
+import { filter } from './Redux/Filter/Filter';
 
 export function App() {
-  const [contacts, setContacts] = useLocalStorage(CONTACTS_LIST, []);
-  const [filter, setFilter] = useState('');
+  const dispatch = useDispatch();
 
-  const addContact = (name, number) => {
+  const contacts = useSelector(state => state.contacts.array);
+  const contactsFilter = useSelector(state => state.filter.value);
+
+  const addContacts = (name, number) => {
     const checkName = contacts.some(
       el => el.name.toLowerCase() === name.toLowerCase()
     );
@@ -30,21 +31,22 @@ export function App() {
       name: name,
       number: number,
     };
-    setContacts([...contacts, newContact]);
+
+    dispatch(addContact(newContact));
   };
 
-  const removeContact = id => {
-    setContacts(prevContacts => prevContacts.filter(el => el.id !== id));
+  const removeContacts = id => {
+    return dispatch(removeContact(id));
   };
 
   const getFilteredContacts = () => {
     return contacts.filter(contact =>
-      contact.name.toLowerCase().includes(filter.toLowerCase())
+      contact.name.toLowerCase().includes(contactsFilter.toLowerCase())
     );
   };
 
   const handleFilterChange = e => {
-    setFilter(e.target.value);
+    dispatch(filter(e.target.value));
   };
 
   const filteredContacts = getFilteredContacts();
@@ -52,13 +54,13 @@ export function App() {
   return (
     <Container>
       <MainTitle>Phonebook</MainTitle>
-      <PhonebookForm addContact={addContact} />
+      <PhonebookForm addContact={addContacts} />
       <SecondTitle>Contacts</SecondTitle>
       <FilterForm label="Find contacts by name" onChange={handleFilterChange} />
       {contacts.length === 0 ? (
         <p>You don't have contacts yet</p>
       ) : (
-        <Contacts options={filteredContacts} removeContact={removeContact} />
+        <Contacts options={filteredContacts} removeContact={removeContacts} />
       )}
     </Container>
   );
